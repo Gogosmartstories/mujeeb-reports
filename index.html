@@ -1,0 +1,388 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#8b1538">
+  <title>بوابة التقارير الأكاديمية والسلوكية</title>
+  <style>
+    :root {
+      --burgundy:#8b1538;
+      --burgundy-dark:#68102a;
+      --gold:#c9a45c;
+      --sand:#f6f0e7;
+      --ink:#2e2630;
+      --muted:#756b72;
+      --line:#e4d5da;
+      --white:#fff;
+      --danger:#b42318;
+      --success:#087a55;
+      --shadow:0 18px 50px rgba(64, 23, 38, .14);
+    }
+    * { box-sizing:border-box; }
+    body {
+      margin:0;
+      min-height:100vh;
+      font-family:Tahoma, Arial, sans-serif;
+      color:var(--ink);
+      background:
+        radial-gradient(circle at 20% 0%, rgba(201,164,92,.16), transparent 35%),
+        linear-gradient(160deg, #fff 0%, var(--sand) 100%);
+    }
+    .page {
+      min-height:100vh;
+      display:grid;
+      place-items:center;
+      padding:28px 16px;
+    }
+    .card {
+      width:min(520px, 100%);
+      background:rgba(255,255,255,.97);
+      border:1px solid rgba(139,21,56,.10);
+      border-radius:26px;
+      box-shadow:var(--shadow);
+      overflow:hidden;
+    }
+    .topbar {
+      height:7px;
+      background:linear-gradient(90deg, var(--burgundy-dark), var(--burgundy), var(--gold));
+    }
+    .content { padding:30px 28px 28px; }
+    .icon {
+      width:64px;height:64px;
+      margin:0 auto 14px;
+      border-radius:20px;
+      display:grid;
+      place-items:center;
+      font-size:32px;
+      background:linear-gradient(145deg,#f8eef1,#fff);
+      border:1px solid #f0dfe5;
+      box-shadow:0 8px 24px rgba(139,21,56,.08);
+    }
+    h1 {
+      margin:0;
+      color:var(--burgundy);
+      text-align:center;
+      font-size:clamp(25px, 5vw, 34px);
+      line-height:1.35;
+    }
+    .subtitle {
+      margin:10px auto 26px;
+      text-align:center;
+      color:var(--muted);
+      font-size:15px;
+      line-height:1.8;
+      max-width:430px;
+    }
+    .field { margin-bottom:18px; }
+    label {
+      display:block;
+      margin-bottom:8px;
+      font-weight:700;
+      color:#552331;
+      font-size:15px;
+    }
+    .required { color:var(--burgundy); }
+    input {
+      width:100%;
+      height:54px;
+      border:2px solid var(--line);
+      border-radius:15px;
+      padding:0 16px;
+      font-size:17px;
+      text-align:center;
+      color:var(--ink);
+      outline:none;
+      background:#fff;
+      transition:.2s ease;
+    }
+    input:focus {
+      border-color:var(--burgundy);
+      box-shadow:0 0 0 4px rgba(139,21,56,.08);
+    }
+    .btn {
+      width:100%;
+      min-height:54px;
+      border:0;
+      border-radius:15px;
+      background:linear-gradient(135deg,var(--burgundy-dark),#b01f4d);
+      color:#fff;
+      font-size:17px;
+      font-weight:700;
+      cursor:pointer;
+      box-shadow:0 10px 25px rgba(139,21,56,.22);
+      transition:.2s ease;
+    }
+    .btn:hover { transform:translateY(-1px); }
+    .btn:disabled { opacity:.65; cursor:not-allowed; transform:none; }
+    .msg {
+      display:none;
+      margin:16px 0 0;
+      padding:12px 14px;
+      border-radius:12px;
+      font-size:14px;
+      line-height:1.7;
+      text-align:center;
+    }
+    .msg.error { display:block;background:#fff0ef;color:var(--danger);border:1px solid #ffd0cc; }
+    .msg.success { display:block;background:#ecfdf5;color:var(--success);border:1px solid #b7efda; }
+    .school-info {
+      margin:18px 0 22px;
+      padding:16px 18px;
+      border-radius:16px;
+      background:linear-gradient(145deg,#fbf7f2,#fff);
+      border:1px solid #eadde1;
+      text-align:center;
+      line-height:1.8;
+    }
+    .school-name {
+      color:var(--burgundy);
+      font-weight:700;
+      font-size:17px;
+      margin-bottom:8px;
+    }
+    .leadership {
+      color:#5f555a;
+      font-size:14px;
+    }
+    .privacy {
+      margin-top:18px;
+      text-align:center;
+      font-size:12px;
+      line-height:1.7;
+      color:#857980;
+    }
+    .spinner {
+      display:inline-block;
+      width:18px;height:18px;
+      border:2px solid rgba(255,255,255,.45);
+      border-top-color:#fff;
+      border-radius:50%;
+      animation:spin .8s linear infinite;
+      vertical-align:-4px;
+      margin-left:7px;
+    }
+    @keyframes spin { to { transform:rotate(360deg); } }
+
+    .overlay {
+      position:fixed;
+      inset:0;
+      z-index:9999;
+      background:rgba(28,16,20,.82);
+      padding:18px;
+      display:none;
+      align-items:center;
+      justify-content:center;
+      backdrop-filter:blur(5px);
+    }
+    .overlay.open { display:flex; }
+    .report-box {
+      position:relative;
+      width:min(980px, 100%);
+      max-height:95vh;
+      overflow:auto;
+      background:#fff;
+      border-radius:22px;
+      padding:22px;
+      box-shadow:0 28px 70px rgba(0,0,0,.32);
+    }
+    .close {
+      position:sticky;
+      top:0;
+      z-index:2;
+      float:left;
+      width:42px;height:42px;
+      border:0;
+      border-radius:50%;
+      background:#f7e9ee;
+      color:var(--burgundy);
+      font-size:26px;
+      cursor:pointer;
+    }
+    .report-title {
+      color:var(--burgundy);
+      text-align:center;
+      margin:6px 50px 6px;
+      font-size:24px;
+    }
+    .student-name {
+      text-align:center;
+      color:#5d5257;
+      margin-bottom:16px;
+      font-weight:700;
+    }
+    .report-image {
+      display:block;
+      width:100%;
+      height:auto;
+      max-width:900px;
+      margin:0 auto;
+      border-radius:10px;
+      border:1px solid #eee;
+    }
+    @media (max-width:600px) {
+      .content { padding:26px 20px 22px; }
+      .card { border-radius:20px; }
+      .report-box { padding:14px; border-radius:16px; }
+      .report-title { font-size:20px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <section class="card" aria-labelledby="pageTitle">
+      <div class="topbar"></div>
+      <div class="content">
+        <div class="icon" aria-hidden="true">📊</div>
+        <h1 id="pageTitle">التقرير الأكاديمي والسلوكي</h1>
+        <p class="subtitle">أدخل الرقم الشخصي للطالبة ورقم هاتف ولي الأمر المسجّل لعرض التقرير.</p>
+
+        <div class="school-info">
+          <div class="school-name">مدرسة هند بنت عُتبة الإعدادية للبنات</div>
+          <div class="leadership">النائبة الأكاديمية: أ/ إيناس العوضي</div>
+          <div class="leadership">مديرة المدرسة: أ/ حصة الشمري</div>
+        </div>
+
+        <form id="reportForm" novalidate>
+          <div class="field">
+            <label for="academicId">الرقم الشخصي <span class="required">*</span></label>
+            <input id="academicId" name="academicId" type="text" inputmode="numeric" autocomplete="off"
+                   placeholder="أدخل الرقم الشخصي" maxlength="20" required>
+          </div>
+
+          <div class="field">
+            <label for="parentPhone">رقم هاتف ولي الأمر <span class="required">*</span></label>
+            <input id="parentPhone" name="parentPhone" type="tel" inputmode="numeric" autocomplete="off"
+                   placeholder="مثال: 55123456" maxlength="16" required>
+          </div>
+
+          <button class="btn" id="reportButton" type="submit">عرض التقرير</button>
+          <div id="message" class="msg" role="status" aria-live="polite"></div>
+        </form>
+
+        <div class="privacy">يتم استخدام البيانات المدخلة للتحقق من صلاحية عرض التقرير فقط.</div>
+      </div>
+    </section>
+  </main>
+
+  <div id="reportOverlay" class="overlay" role="dialog" aria-modal="true" aria-labelledby="reportTitle">
+    <div class="report-box">
+      <button class="close" id="closeReport" aria-label="إغلاق">×</button>
+      <h2 class="report-title" id="reportTitle">التقرير الأكاديمي والسلوكي</h2>
+      <div class="student-name" id="studentName"></div>
+      <img id="reportImage" class="report-image" alt="صورة التقرير الأكاديمي والسلوكي">
+    </div>
+  </div>
+
+  <script>
+    const REPORT_API_URL = 'https://script.google.com/macros/s/AKfycbxcvzRxnwOaNOtiu_hHEDGr5HzzJNhAZxD1cjddYo9tyQEjssD7f82cdNkMxMTko-jXyA/exec';
+
+    const form = document.getElementById('reportForm');
+    const academicIdInput = document.getElementById('academicId');
+    const phoneInput = document.getElementById('parentPhone');
+    const button = document.getElementById('reportButton');
+    const message = document.getElementById('message');
+    const overlay = document.getElementById('reportOverlay');
+    const reportImage = document.getElementById('reportImage');
+    const studentName = document.getElementById('studentName');
+    const closeReport = document.getElementById('closeReport');
+
+    function digitsOnly(value) {
+      return String(value || '').replace(/\D/g, '');
+    }
+
+    function showMessage(text, type='error') {
+      message.textContent = text;
+      message.className = 'msg ' + type;
+    }
+
+    function clearMessage() {
+      message.textContent = '';
+      message.className = 'msg';
+    }
+
+    function setLoading(isLoading) {
+      button.disabled = isLoading;
+      button.innerHTML = isLoading
+        ? '<span class="spinner"></span>جاري تحميل التقرير...'
+        : 'عرض التقرير';
+    }
+
+    function openReport(imageData, name) {
+      studentName.textContent = name ? 'الطالبة: ' + name : '';
+      reportImage.src = imageData;
+      overlay.classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeReportModal() {
+      overlay.classList.remove('open');
+      document.body.style.overflow = '';
+      reportImage.removeAttribute('src');
+    }
+
+    closeReport.addEventListener('click', closeReportModal);
+    overlay.addEventListener('click', (e) => {
+      if (e.target === overlay) closeReportModal();
+    });
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && overlay.classList.contains('open')) closeReportModal();
+    });
+
+    academicIdInput.addEventListener('input', () => {
+      academicIdInput.value = digitsOnly(academicIdInput.value);
+    });
+    phoneInput.addEventListener('input', () => {
+      phoneInput.value = digitsOnly(phoneInput.value);
+    });
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      clearMessage();
+
+      const academicId = digitsOnly(academicIdInput.value);
+      const phone = digitsOnly(phoneInput.value);
+
+      if (!academicId || !phone) {
+        showMessage('يرجى إدخال الرقم الشخصي ورقم هاتف ولي الأمر.');
+        return;
+      }
+
+      setLoading(true);
+
+      try {
+        const url = REPORT_API_URL
+          + '?academicId=' + encodeURIComponent(academicId)
+          + '&phone=' + encodeURIComponent(phone);
+
+        const response = await fetch(url, { method: 'GET', redirect: 'follow' });
+
+        if (!response.ok) {
+          throw new Error('HTTP ' + response.status);
+        }
+
+        const result = await response.json();
+
+        if (!result.success) {
+          showMessage(result.message || 'تعذر العثور على التقرير.');
+          return;
+        }
+
+        if (!result.image) {
+          showMessage('تم التحقق من البيانات ولكن صورة التقرير غير متاحة.');
+          return;
+        }
+
+        showMessage('تم التحقق من البيانات بنجاح.', 'success');
+        openReport(result.image, result.studentName || '');
+
+      } catch (error) {
+        console.error(error);
+        showMessage('تعذر الاتصال بخدمة التقارير. يرجى المحاولة مرة أخرى.');
+      } finally {
+        setLoading(false);
+      }
+    });
+  </script>
+</body>
+</html>
