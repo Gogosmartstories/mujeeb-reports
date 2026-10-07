@@ -275,7 +275,7 @@
   </div>
 
   <script>
-    const REPORT_API_URL = 'https://script.google.com/macros/s/AKfycbxcvzRxnwOaNOtiu_hHEDGr5HzzJNhAZxD1cjddYo9tyQEjssD7f82cdNkMxMTko-jXyA/exec';
+    const REPORT_API_URL = "/api/report";
 
     const form = document.getElementById('reportForm');
     const academicIdInput = document.getElementById('academicId');
@@ -351,11 +351,17 @@
       setLoading(true);
 
       try {
-        const url = REPORT_API_URL
-          + '?academicId=' + encodeURIComponent(academicId)
-          + '&phone=' + encodeURIComponent(phone);
-
-        const response = await fetch(url, { method: 'GET', redirect: 'follow' });
+        const response = await fetch(REPORT_API_URL, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+          },
+          body: JSON.stringify({
+            personalId: academicId,
+            phone: phone
+          })
+        });
 
         if (!response.ok) {
           throw new Error('HTTP ' + response.status);
